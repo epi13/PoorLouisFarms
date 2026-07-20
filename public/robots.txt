@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://epi13.github.io/PoorLouisFarms/sitemap-index.xml

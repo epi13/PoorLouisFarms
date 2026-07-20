@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { productImages } from '@/data/media';
+import { site, withBase } from '@/data/site';
+
+const products = (await getCollection('products')).slice(0, 4);
+---
+<BaseLayout title="Shop on Square" description="Continue from the Poor Louis Farms Explore & Learn site to the current Square store for prices, availability, options, fulfillment, and checkout.">
+  <PageHeader eyebrow="The shop gateway" title="The shelf changes. Square keeps it current." intro="This site is the field guide; Square is the store. Continue there for live products, prices, availability, options, fulfillment, and checkout." number="10" />
+  <section class="section--tight section--ink">
+    <div class="container split">
+      <div><p class="eyebrow">You are leaving Explore & Learn</p><h2>Current shopping happens securely on Square.</h2><p>Square opens in a new tab so you can return to product stories, ingredient notes, and journal articles without losing your place.</p><a class="button button--light" href={site.squareShopUrl} target="_blank" rel="noopener noreferrer">Enter the Square store <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></div>
+      <div class="story-ledger"><dl><div class="story-row"><dt>Here</dt><dd>Stories, ingredients, process, seasons, and sources</dd></div><div class="story-row"><dt>Square</dt><dd>Prices, stock, options, fulfillment, ordering, and payment</dd></div><div class="story-row"><dt>Questions</dt><dd>Email the farm for information not shown in the current listing</dd></div></dl></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="section-heading"><p class="eyebrow">Want context first?</p><h2>Return to the product field notes.</h2><p>These are current-catalog products at the time of the content audit, not a promise of live inventory.</p></div>
+      <div class="product-grid">{products.map((product) => { const image = productImages[product.data.imageKey as keyof typeof productImages]; return <article class="product-card"><a class="product-card__image" href={withBase(`/products/${product.id}/`)}><Image src={image} alt={product.data.alt} widths={[320, 480]} sizes="(max-width:600px) 92vw, 23vw" format="webp" loading="lazy" /></a><div class="product-card__content"><p class="ledger-label">{product.data.category}</p><h2><a href={withBase(`/products/${product.id}/`)}>{product.data.name}</a></h2><a class="text-link" href={withBase(`/products/${product.id}/`)}>Read the product note <span aria-hidden="true">→</span></a></div></article>})}</div>
+    </div>
+  </section>
+</BaseLayout>

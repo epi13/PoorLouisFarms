@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { withBase } from '@/data/site';
+
+const faqs = (await getCollection('faqs')).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout title="Frequently Asked Questions" description="Practical answers about buying, Square checkout, seasonality, Alaskan ingredients, fireweed leaves, wholesale inquiries, visiting, contact, product use, and storage.">
+  <PageHeader eyebrow="Practical notes" title="Frequently asked questions" intro="Direct answers about the catalog, ingredient language, seasonality, getting in touch, and the boundary between a private family farm and a public website." number="08" />
+  <section class="section--tight section--paper-light">
+    <div class="container faq-list">
+      {faqs.map((faq, index) => <details open={index === 0}><summary>{faq.data.question}</summary><p>{faq.data.answer}</p></details>)}
+    </div>
+  </section>
+  <section class="section"><div class="reading"><h2>Still looking?</h2><p>If the question is about a current product, option, price, or order, start with Square. If it is about the farm or a possible collaboration, send a concise email.</p><div class="button-row"><a class="button" href="https://poor-louis-farms.square.site/s/shop" target="_blank" rel="noopener noreferrer">Check Square <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a><a class="button button--secondary" href={withBase('/contact/')}>Contact the farm</a></div></div></section>
+</BaseLayout>

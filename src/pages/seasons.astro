@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { withBase } from '@/data/site';
+
+const seasons = (await getCollection('seasons')).sort((a, b) => a.data.order - b.data.order);
+const colors = { sky: 'var(--sky)', goldenrod: 'var(--goldenrod)', fireweed: 'var(--fireweed)', berry: 'var(--berry)' };
+---
+<BaseLayout title="Seasons" description="A flexible seasonal ledger of winter planning, spring growth, summer gathering and making, and autumn finishing at Poor Louis Farms in Alaska.">
+  <PageHeader eyebrow="A northern year" title="Work follows the season, not a rigid schedule." intro="These are rhythms, not promises. Weather, plant stage, family time, ingredient supply, and a particular experiment can move the work forward or ask it to wait." number="05" />
+  <section class="section--tight section--paper-light">
+    <div class="container">
+      <div class="season-ledger">
+        {seasons.map((season) => (
+          <article class="season-entry" style={`--season-color:${colors[season.data.color as keyof typeof colors]}`}>
+            <p class="ledger-label">Season {String(season.data.order).padStart(2, '0')}</p>
+            <h2>{season.data.name}</h2>
+            <blockquote>{season.data.note}</blockquote>
+            <ul>{season.data.activities.map((activity) => <li>{activity}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section"><div class="container split"><div><p class="eyebrow">The useful uncertainty</p><h2>“Seasonal” is information, not a scarcity slogan.</h2></div><div><p>A plant may be ready early, late, briefly, or not at all. A finished product may be held back, revised, or offered in a different format. Square shows the result that is actually available; this page explains why the path changes.</p><div class="button-row"><a class="button button--secondary" href={withBase('/farm/')}>Return to the farm map</a><a class="button" href="https://poor-louis-farms.square.site/s/shop" target="_blank" rel="noopener noreferrer">View current products <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></div></div></div></section>
+</BaseLayout>

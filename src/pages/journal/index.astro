@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+
+const articles = (await getCollection('journal')).sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf() || a.data.title.localeCompare(b.data.title));
+const categories = [...new Set(articles.map((article) => article.data.category))];
+---
+<BaseLayout title="Journal" description="Read Poor Louis Farms field notes about fireweed tea, Alaska seasons, small-batch making, spruce tips, fermentation, drying, responsible gathering, and the farm's name.">
+  <PageHeader eyebrow="Journal / Learn" title="Field notes for curious hands." intro="Short, substantive guides to the plants, processes, seasonal decisions, and family story behind the work. Sources appear where facts reach beyond the farm's own record." number="06" />
+  <section class="section--tight">
+    <div class="container">
+      <div class="article-filter" aria-label="Filter journal by category" data-article-filter>
+        <button class="filter-button" type="button" aria-pressed="true" data-category="all">All notes</button>
+        {categories.map((category) => <button class="filter-button" type="button" aria-pressed="false" data-category={category}>{category}</button>)}
+      </div>
+      <noscript><p class="note-box">Category filtering needs JavaScript, but every article is listed below.</p></noscript>
+      <p class="result-count" aria-live="polite" data-article-count>{articles.length} field notes</p>
+      <div class="article-list">
+        {articles.map((article, index) => <div data-article-card data-category={article.data.category}><ArticleCard article={article} index={index} /></div>)}
+      </div>
+    </div>
+  </section>
+  <script>
+    const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-article-filter] button')];
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-article-card]')];
+    const count = document.querySelector('[data-article-count]');
+    for (const button of buttons) button.addEventListener('click', () => {
+      for (const item of buttons) item.setAttribute('aria-pressed', String(item === button));
+      let visible = 0;
+      for (const card of cards) { card.hidden = button.dataset.category !== 'all' && card.dataset.category !== button.dataset.category; if (!card.hidden) visible++; }
+      if (count) count.textContent = `${visible} ${visible === 1 ? 'field note' : 'field notes'}`;
+    });
+  </script>
+</BaseLayout>

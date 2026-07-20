@@ -1,0 +1,20 @@
+---
+interface Props { size?: number; decorative?: boolean; }
+const { size = 52, decorative = true } = Astro.props;
+---
+<svg
+  class="brand-mark"
+  width={size}
+  height={size}
+  viewBox="0 0 64 64"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden={decorative ? 'true' : undefined}
+  role={decorative ? undefined : 'img'}
+>
+  {!decorative && <title>Poor Louis Farms mountain and botanical emblem</title>}
+  <path d="M5 43.5 21 26l8.5 9L39 20l20 23.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M8 49c12-2.7 25-2.4 48 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M20 48c.2-9 1.4-17.8 5-27M24 26l-5-5M23 31l6-5M22 37l-6-4M21.5 42l6-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+  <circle cx="25.6" cy="17.4" r="2" fill="currentColor"/>
+</svg>

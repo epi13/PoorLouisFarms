@@ -1,0 +1,34 @@
+{
+  "name": "poor-louis-farms-explore-learn",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "playwright test",
+    "test:a11y": "playwright test tests/accessibility.spec.ts",
+    "test:links": "playwright test tests/links.spec.ts",
+    "test:viewports": "playwright test tests/viewports.spec.ts --project=desktop-chromium",
+    "screenshots": "node scripts/capture-screenshots.mjs",
+    "qa": "npm run build && playwright test",
+    "lighthouse": "lhci autorun"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.1.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@axe-core/playwright": "^4.10.2",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

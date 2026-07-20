@@ -1,0 +1,40 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { withBase } from '@/data/site';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('journal');
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+const { article } = Astro.props;
+const { Content } = await render(article);
+const products = await getCollection('products');
+const ingredients = await getCollection('ingredients');
+const relatedProducts = products.filter((entry) => article.data.relatedProducts.includes(entry.id));
+const relatedIngredients = ingredients.filter((entry) => article.data.relatedIngredients.includes(entry.id));
+const wordCount = article.body?.trim().split(/\s+/).length ?? 0;
+const minutes = Math.max(2, Math.ceil(wordCount / 220));
+---
+<BaseLayout title={article.data.title} description={article.data.description} article={{ published: article.data.published, reviewed: article.data.reviewed }}>
+  <Breadcrumbs items={[{ label: 'Journal', href: '/journal/' }, { label: article.data.title }]} />
+  <article class="container article-shell">
+    <aside class="article-aside">
+      <div class="article-aside__sticky">
+        <p class="ledger-label">{article.data.category}</p>
+        <p>{minutes} minute read</p>
+        <p>Published <time datetime={article.data.published.toISOString()}>{article.data.published.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time></p>
+        <p>Fact-reviewed <time datetime={article.data.reviewed.toISOString()}>{article.data.reviewed.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time></p>
+        <a class="text-link" href={withBase('/journal/')}>← All field notes</a>
+      </div>
+    </aside>
+    <div class="article-body">
+      <header><p class="eyebrow">Poor Louis Farms journal</p><h1>{article.data.title}</h1><p class="lede">{article.data.description}</p></header>
+      <div class="prose"><Content /></div>
+      <div class="note-box"><strong>Educational scope</strong>This article shares botanical, culinary, and process context. It is not medical advice or a substitute for a current product label, tested preservation method, or expert plant identification.</div>
+      {(relatedProducts.length > 0 || relatedIngredients.length > 0) && <section class="detail-section"><h2>Continue exploring</h2><ul class="related-strip">{relatedProducts.map((item) => <li><a href={withBase(`/products/${item.id}/`)}>{item.data.name} <span aria-hidden="true">→</span></a></li>)}{relatedIngredients.map((item) => <li><a href={withBase(`/ingredients/${item.id}/`)}>{item.data.name} <span aria-hidden="true">→</span></a></li>)}</ul></section>}
+      {article.data.sources.length > 0 && <section class="source-notes"><h2>Source notes</h2><ol>{article.data.sources.map((source) => <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}<span class="sr-only"> (opens in a new tab)</span></a></li>)}</ol></section>}
+    </div>
+  </article>
+</BaseLayout>

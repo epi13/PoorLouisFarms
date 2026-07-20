@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import ShopNote from '@/components/ShopNote.astro';
+
+const products = (await getCollection('products')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const categories = [...new Set(products.map((product) => product.data.category))];
+---
+<BaseLayout title="Products" description="Explore current Poor Louis Farms teas, hot sauce, spice blends, body and bath goods, home goods, and gift sets, then check live availability on Square.">
+  <PageHeader eyebrow="The pantry ledger" title="Products to explore, not a second checkout." intro="These pages hold the ingredients, flavor notes, uses, and process stories behind the current public catalog. Square stays in charge of what is available today." number="01" />
+  <section class="section--tight section--paper-light">
+    <div class="container">
+      <div class="filter-panel" data-catalog-filters>
+        <div class="field">
+          <label for="product-search">Search products</label>
+          <input id="product-search" type="search" placeholder="Try fireweed, tea, or salve" autocomplete="off" data-search-input />
+        </div>
+        <div class="field">
+          <label for="product-category">Category</label>
+          <select id="product-category" data-category-select>
+            <option value="all">All categories</option>
+            {categories.map((category) => <option value={category.toLowerCase()}>{category}</option>)}
+          </select>
+        </div>
+        <p class="result-count" aria-live="polite" data-result-count>{products.length} products</p>
+      </div>
+      <noscript><p class="note-box">Search and category filters need JavaScript, but every product is listed below.</p></noscript>
+      <div class="product-grid" data-product-grid>
+        {products.map((product, index) => <ProductCard product={product} eager={index < 3} />)}
+        <p class="empty-results" hidden data-empty>No products match those filters. Try a broader word or choose all categories.</p>
+      </div>
+    </div>
+  </section>
+  <ShopNote title="The live shelf is on Square." />
+  <script>
+    const searchInput = document.querySelector('[data-search-input]') as HTMLInputElement | null;
+    const categorySelect = document.querySelector('[data-category-select]') as HTMLSelectElement | null;
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-catalog-item]')];
+    const count = document.querySelector('[data-result-count]');
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+    const params = new URLSearchParams(location.search);
+    const requested = params.get('category')?.toLowerCase();
+    if (requested && categorySelect) {
+      const option = [...categorySelect.options].find((item) => item.value === requested || item.value.includes(requested));
+      if (option) categorySelect.value = option.value;
+    }
+    const filterProducts = () => {
+      const query = searchInput?.value.trim().toLowerCase() ?? '';
+      const category = categorySelect?.value ?? 'all';
+      let visible = 0;
+      for (const card of cards) {
+        const matchesText = (card.dataset.search ?? '').includes(query);
+        const matchesCategory = category === 'all' || card.dataset.category === category;
+        card.hidden = !(matchesText && matchesCategory);
+        if (!card.hidden) visible++;
+      }
+      if (count) count.textContent = `${visible} ${visible === 1 ? 'product' : 'products'}`;
+      if (empty) empty.hidden = visible !== 0;
+    };
+    searchInput?.addEventListener('input', filterProducts);
+    categorySelect?.addEventListener('change', filterProducts);
+    filterProducts();
+  </script>
+</BaseLayout>

@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import specimenPlate from '@/assets/illustrations/ingredient-specimen-plate.png';
+import { withBase } from '@/data/site';
+
+export async function getStaticPaths() {
+  const ingredients = await getCollection('ingredients');
+  return ingredients.map((ingredient) => ({ params: { slug: ingredient.id }, props: { ingredient } }));
+}
+const { ingredient } = Astro.props;
+const products = await getCollection('products');
+const articles = await getCollection('journal');
+const relatedProducts = products.filter((entry) => ingredient.data.relatedProducts.includes(entry.id));
+const relatedArticles = articles.filter((entry) => ingredient.data.relatedArticles.includes(entry.id));
+const statusLabels = { current: 'Used in current products', seasonal: 'Seasonal use', exploring: 'Being explored', educational: 'Educational entry' };
+---
+<BaseLayout title={ingredient.data.name} description={`${ingredient.data.name}: part used, season, flavor, Poor Louis Farms context, and careful source notes.`}>
+  <Breadcrumbs items={[{ label: 'Ingredient Field Guide', href: '/ingredients/' }, { label: ingredient.data.name }]} />
+  <article class="container ingredient-detail">
+    <figure class="ingredient-detail__plate">
+      <Image src={specimenPlate} alt="Watercolor ingredient specimen plate; the full composition includes fireweed, spruce tips, rosehips, raspberry leaf, calendula, and dried chiles." widths={[480, 720, 960]} sizes="(max-width: 768px) 92vw, 34vw" format="webp" loading="eager" style={`object-position:${ingredient.data.illustrationPosition}`} />
+    </figure>
+    <div>
+      <p class="eyebrow">{statusLabels[ingredient.data.status]}</p>
+      <h1>{ingredient.data.name}</h1>
+      {ingredient.data.scientificName && <p class="lede"><em>{ingredient.data.scientificName}</em></p>}
+      <dl class="taxonomy">
+        <div><dt>Type</dt><dd>{ingredient.data.kind === 'botanical' ? 'Botanical' : 'Place-based pantry ingredient'}</dd></div>
+        {ingredient.data.family && <div><dt>Family</dt><dd>{ingredient.data.family}</dd></div>}
+        <div><dt>Part used</dt><dd>{ingredient.data.partUsed}</dd></div>
+        <div><dt>Season</dt><dd>{ingredient.data.season}</dd></div>
+      </dl>
+      <section class="detail-section"><h2>Where it grows or comes from</h2><p>{ingredient.data.habitat}</p></section>
+      <section class="detail-section"><h2>Aroma & flavor</h2><p>{ingredient.data.aromaFlavor}</p></section>
+      {ingredient.data.culinaryUses.length > 0 && <section class="detail-section"><h2>Culinary context</h2><ul>{ingredient.data.culinaryUses.map((use) => <li>{use}</li>)}</ul></section>}
+      {ingredient.data.householdUses.length > 0 && <section class="detail-section"><h2>Household & craft context</h2><ul>{ingredient.data.householdUses.map((use) => <li>{use}</li>)}</ul></section>}
+      <section class="detail-section"><h2>Traditional-use context</h2><p>{ingredient.data.traditionalContext}</p></section>
+      <section class="detail-section"><h2>At Poor Louis Farms</h2><p>{ingredient.data.farmUse}</p></section>
+      <div class="note-box"><strong>Identification & safety</strong>{ingredient.data.safety}</div>
+      {relatedProducts.length > 0 && <section class="detail-section"><h2>Related products</h2><ul class="related-strip">{relatedProducts.map((product) => <li><a href={withBase(`/products/${product.id}/`)}>{product.data.name} <span aria-hidden="true">→</span></a></li>)}</ul></section>}
+      {relatedArticles.length > 0 && <section class="detail-section"><h2>Continue reading</h2><ul>{relatedArticles.map((article) => <li><a href={withBase(`/journal/${article.id}/`)}>{article.data.title}</a></li>)}</ul></section>}
+      <section class="source-notes"><h2>Source notes</h2><ol>{ingredient.data.sources.map((source) => <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}<span class="sr-only"> (opens in a new tab)</span></a></li>)}</ol><p>Botanical information is educational and does not replace expert identification, a product label, or medical advice.</p></section>
+    </div>
+  </article>
+</BaseLayout>

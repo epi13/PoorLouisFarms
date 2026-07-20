@@ -1,0 +1,16 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { site, withBase } from '@/data/site';
+---
+<BaseLayout title="Contact & Connect" description="Email Poor Louis Farms, follow the verified Facebook page, or continue to the current Square store. The Wasilla family farm has no posted public visiting hours.">
+  <PageHeader eyebrow="Verified ways to connect" title="Send a note or follow the season." intro="Use the public contact points below. No phone number, public visiting hours, or drop-in farm access is listed." number="09" />
+  <section class="section--tight section--paper-light">
+    <div class="container contact-sheet">
+      <article class="contact-method"><p class="ledger-label">Email</p><h2>Questions & thoughtful inquiries</h2><p>Include the product or subject in your note so the family can understand what you need.</p><a href={`mailto:${site.email}`}>{site.email}</a></article>
+      <article class="contact-method"><p class="ledger-label">Facebook</p><h2>Follow current farm updates</h2><p>The Square storefront identifies this as the farm's selected public social link.</p><a href={site.facebook} target="_blank" rel="noopener noreferrer">Poor Louis Farms on Facebook <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></article>
+      <article class="contact-method"><p class="ledger-label">Square</p><h2>Products, orders & availability</h2><p>Use Square for the current shelf, prices, options, fulfillment information, and secure checkout.</p><a href={site.squareShopUrl} target="_blank" rel="noopener noreferrer">Open the Square store <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></article>
+    </div>
+  </section>
+  <section class="section"><div class="container split split--top"><div><p class="eyebrow">A private family farm</p><h2>Please plan connection before place.</h2></div><div><p>Poor Louis Farms is located in Wasilla, Alaska, but no public address, retail counter, tour program, or visiting hours are published. Please do not arrive for an unscheduled visit.</p><p>When the farm announces a public event or market, use the details in that current announcement rather than an old post or third-party listing.</p><a class="text-link" href={withBase('/faq/')}>Read all practical questions <span aria-hidden="true">→</span></a></div></div></section>
+</BaseLayout>

@@ -1,0 +1,12 @@
+{
+  "name": "Poor Louis Farms — Explore & Learn",
+  "short_name": "Poor Louis Farms",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5efdf",
+  "theme_color": "#284f3e",
+  "icons": [
+    {"src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
