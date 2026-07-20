@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import specimenPlate from '@/assets/illustrations/ingredient-specimen-plate.png';
+import { withBase } from '@/data/site';
+
+const ingredients = (await getCollection('ingredients')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const statusLabels = { current: 'Used in current products', seasonal: 'Seasonal use', exploring: 'Being explored', educational: 'Educational entry' };
+---
+<BaseLayout title="Ingredient Field Guide" description="Explore fireweed, spruce tips, rosehips, raspberry leaf, calendula, chiles, and Whittier sea salt through a careful Alaska ingredient field guide.">
+  <PageHeader eyebrow="Specimen notes" title="Ingredient Field Guide" intro="A searchable guide to the plants and pantry materials connected to the current catalog—what part is used, when it appears, how it tastes, and what is still unknown." number="02" />
+  <section class="section--tight section--paper-light">
+    <div class="container specimen-hero">
+      <div><p class="eyebrow">Read the whole specimen</p><h2>Botanical facts and farm facts are not the same thing.</h2><p>Each entry separates general reference information from Poor Louis Farms' confirmed product use. Exact species stay broad when the product record does not name them.</p><ul class="status-key">{Object.entries(statusLabels).map(([key, label]) => <li data-status-key={key}>{label}</li>)}</ul></div>
+      <div class="specimen-hero__image"><Image src={specimenPlate} alt="Illustrated specimen plate of fireweed, spruce tips, rosehips, raspberry leaves, calendula, and dried chiles." widths={[480, 768, 1120]} sizes="(max-width: 768px) 92vw, 54vw" format="avif" loading="eager" /></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="filter-panel">
+        <div class="field"><label for="ingredient-search">Search the guide</label><input id="ingredient-search" type="search" placeholder="Try leaves, citrus, or fermented" data-ingredient-search /></div>
+        <div class="field"><label for="ingredient-status">Relationship</label><select id="ingredient-status" data-ingredient-status><option value="all">All entries</option>{Object.entries(statusLabels).map(([key, label]) => <option value={key}>{label}</option>)}</select></div>
+        <p class="result-count" aria-live="polite" data-ingredient-count>{ingredients.length} entries</p>
+      </div>
+      <noscript><p class="note-box">Search and status filters need JavaScript, but every ingredient is listed below.</p></noscript>
+      <div class="ingredient-grid">
+        {ingredients.map((ingredient, index) => (
+          <article class="ingredient-card" data-ingredient-card data-status={ingredient.data.status} data-search={`${ingredient.data.name} ${ingredient.data.scientificName ?? ''} ${ingredient.data.partUsed} ${ingredient.data.aromaFlavor} ${ingredient.data.farmUse}`.toLowerCase()}>
+            <span class="ingredient-card__index">{String(index + 1).padStart(2, '0')}</span>
+            <div><p class="ledger-label">{statusLabels[ingredient.data.status]}</p><h2><a href={withBase(`/ingredients/${ingredient.id}/`)}>{ingredient.data.name}</a></h2>{ingredient.data.scientificName && <p class="latin">{ingredient.data.scientificName}</p>}<p>{ingredient.data.aromaFlavor}</p><a class="text-link" href={withBase(`/ingredients/${ingredient.id}/`)}>Open specimen notes <span aria-hidden="true">→</span></a></div>
+          </article>
+        ))}
+        <p class="empty-results" hidden data-ingredient-empty>No ingredient entries match those filters.</p>
+      </div>
+    </div>
+  </section>
+  <script>
+    const input = document.querySelector('[data-ingredient-search]') as HTMLInputElement | null;
+    const select = document.querySelector('[data-ingredient-status]') as HTMLSelectElement | null;
+    const items = [...document.querySelectorAll<HTMLElement>('[data-ingredient-card]')];
+    const count = document.querySelector('[data-ingredient-count]');
+    const empty = document.querySelector<HTMLElement>('[data-ingredient-empty]');
+    const filter = () => {
+      const q = input?.value.trim().toLowerCase() ?? '';
+      const status = select?.value ?? 'all';
+      let visible = 0;
+      for (const item of items) { item.hidden = !((item.dataset.search ?? '').includes(q) && (status === 'all' || item.dataset.status === status)); if (!item.hidden) visible++; }
+      if (count) count.textContent = `${visible} ${visible === 1 ? 'entry' : 'entries'}`;
+      if (empty) empty.hidden = visible !== 0;
+    };
+    input?.addEventListener('input', filter); select?.addEventListener('change', filter);
+  </script>
+</BaseLayout>

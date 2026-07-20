@@ -1,0 +1,136 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+import ShopNote from '@/components/ShopNote.astro';
+import heroImage from '@/assets/illustrations/farm-field-hero.png';
+import specimenPlate from '@/assets/illustrations/ingredient-specimen-plate.png';
+import { withBase } from '@/data/site';
+
+const articles = (await getCollection('journal')).filter((entry) => entry.data.featured).slice(0, 3);
+const seasons = (await getCollection('seasons')).sort((a, b) => a.data.order - b.data.order);
+const productFamilies = [
+  { name: 'Leaf teas', note: 'Fireweed and raspberry leaves, handled for a clear cup.', href: '/products/?category=tea' },
+  { name: 'Heat & seasoning', note: 'Fermented chile, spruce tips, rosehips, and salt.', href: '/products/?category=spices' },
+  { name: 'Body & bath', note: 'Farm-grown calendula and seasonal botanical work.', href: '/products/?category=body%20%26%20bath' },
+  { name: 'Home & gifts', note: 'Useful pieces and small Alaska-made discoveries.', href: '/products/?category=home' }
+];
+---
+<BaseLayout>
+  <section class="home-hero" aria-labelledby="home-title">
+    <div class="home-hero__copy">
+      <p class="eyebrow">Wasilla, Alaska · family farm & workshop</p>
+      <h1 id="home-title">Poor Louis Farms</h1>
+      <p class="home-hero__tagline">Wild botanicals and handcrafted creations inspired by the Alaskan wilderness.</p>
+      <div class="button-row">
+        <a class="button" href={withBase('/products/')}>Explore the pantry</a>
+        <a class="button button--secondary" href="https://poor-louis-farms.square.site/s/shop" target="_blank" rel="noopener noreferrer">Shop on Square <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+      </div>
+    </div>
+    <div class="home-hero__visual">
+      <Image src={heroImage} alt="Watercolor field-journal scene of garden rows, fireweed, spruce forest, a small shed, and low Alaskan mountains." widths={[640, 960, 1280, 1728]} sizes="(max-width: 992px) 100vw, 57vw" format="avif" loading="eager" fetchpriority="high" />
+      <p class="home-hero__note">An illustrative farm-edge field note</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="introduction-title">
+    <div class="container intro-block">
+      <aside class="intro-block__aside">
+        <p class="eyebrow">Field note no. 01</p>
+        <p class="field-note">“Curiosity made practical.”</p>
+      </aside>
+      <div class="intro-block__copy">
+        <h2 id="introduction-title">A family place for growing, gathering, making, and trying again.</h2>
+        <p>Alexander and Katherine Collamore moved from Washington to Alaska in 2012. Today, they run Poor Louis Farms in Wasilla while raising three children and following the ideas that emerge from each season.</p>
+        <p>The work crosses categories—teas, spice blends, hot sauces, salves, home goods, flowers, and whatever the next useful experiment becomes. The common thread is attention to local ingredients, hands-on craft, and an honest record of what is known.</p>
+        <div class="family-note"><span aria-hidden="true">✦</span><a class="text-link" href={withBase('/about/')}>Meet the family and learn the name <span aria-hidden="true">→</span></a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink" aria-labelledby="products-title">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">From the current catalog</p>
+        <h2 id="products-title">Open the pantry by family.</h2>
+        <p>Browse the story and process here. Square carries the live shelf.</p>
+      </div>
+      <div class="product-ledger">
+        {productFamilies.map((family, index) => (
+          <a class="product-ledger__row" href={withBase(family.href)}>
+            <span class="product-ledger__number">{String(index + 1).padStart(2, '0')}</span>
+            <strong>{family.name}</strong>
+            <span>{family.note}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+      <div class="button-row"><a class="button button--light" href={withBase('/products/')}>See all 11 catalog products</a></div>
+    </div>
+  </section>
+
+  <section class="section section--paper-light" aria-labelledby="ingredients-title">
+    <div class="container specimen-feature">
+      <div class="specimen-feature__image">
+        <Image src={specimenPlate} alt="Illustrated specimen plate of fireweed, spruce tips, rosehips, raspberry leaves, calendula, and dried chiles." widths={[480, 768, 1120, 1536]} sizes="(max-width: 768px) 92vw, 55vw" format="webp" loading="lazy" />
+      </div>
+      <div>
+        <p class="eyebrow">Ingredient field guide</p>
+        <h2 id="ingredients-title">Look closely at what goes into the work.</h2>
+        <p class="lede">The flower helps you recognize fireweed. The leaf is what goes into Poor Louis Farms tea.</p>
+        <p>Follow an ingredient from its name and habitat to flavor, part used, farm context, safety notes, products, and deeper reading. When an exact species or source is not confirmed, the guide says so.</p>
+        <a class="text-link" href={withBase('/ingredients/')}>Open the field guide <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="process-title">
+    <div class="container split">
+      <div>
+        <p class="eyebrow">A branching process</p>
+        <h2 id="process-title">Not every product follows the same trail.</h2>
+        <p class="lede">A leaf might be dried for tea or fermented and aged. A flower might be dried, infused into oil, and finished with beeswax.</p>
+        <p>The making guide separates sourcing, preparation, transformation, and finishing without pretending that one tidy diagram fits every product.</p>
+        <a class="text-link" href={withBase('/making/')}>Follow the making paths <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="story-ledger">
+        <dl>
+          <div class="story-row"><dt>Source</dt><dd>Grow or gather with the ingredient and place in mind.</dd></div>
+          <div class="story-row"><dt>Prepare</dt><dd>Sort, clean, and decide what the material is ready to become.</dd></div>
+          <div class="story-row"><dt>Transform</dt><dd>Dry, ferment, infuse, blend, or grind along the relevant branch.</dd></div>
+          <div class="story-row"><dt>Finish</dt><dd>Test, bottle, package, label, and keep learning.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink" aria-labelledby="seasons-title">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">A year in working notes</p>
+        <h2 id="seasons-title">The season sets the questions.</h2>
+      </div>
+      <div class="season-glance">
+        {seasons.map((season) => <div><strong>{season.data.name}</strong><p>{season.data.note}</p></div>)}
+      </div>
+      <div class="button-row">
+        <a class="button button--light" href={withBase('/farm/')}>Explore the illustrated farm</a>
+        <a class="button" href={withBase('/seasons/')}>Read the seasonal ledger</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="journal-title">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Journal / Learn</p>
+        <h2 id="journal-title">Begin with three useful questions.</h2>
+      </div>
+      <div class="article-list">{articles.map((article, index) => <ArticleCard article={article} index={index} />)}</div>
+      <div class="button-row"><a class="button button--secondary" href={withBase('/journal/')}>Read all field notes</a></div>
+    </div>
+  </section>
+
+  <ShopNote />
+</BaseLayout>

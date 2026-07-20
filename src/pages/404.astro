@@ -1,0 +1,16 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BrandMark from '@/components/BrandMark.astro';
+import { withBase } from '@/data/site';
+---
+<BaseLayout title="Page Not Found" description="That Poor Louis Farms field note could not be found. Return home, browse products, or open the ingredient guide.">
+  <section class="section">
+    <div class="reading" style="text-align:center">
+      <BrandMark size={96} />
+      <p class="eyebrow" style="margin-top:2rem">404 · off the marked trail</p>
+      <h1>That field note is not here.</h1>
+      <p class="lede">The link may be old, or the page may have moved with the season. The farm, pantry, and journal are still close by.</p>
+      <div class="button-row" style="justify-content:center"><a class="button" href={withBase('/')}>Return home</a><a class="button button--secondary" href={withBase('/products/')}>Explore products</a><a class="button button--secondary" href={withBase('/ingredients/')}>Open the field guide</a></div>
+    </div>
+  </section>
+</BaseLayout>

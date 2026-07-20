@@ -1,0 +1,20 @@
+---
+import { site } from '@/data/site';
+interface Props { title?: string; compact?: boolean; productUrl?: string; label?: string; }
+const {
+  title = 'Ready to see what is on the shelf?',
+  compact = false,
+  productUrl = site.squareShopUrl,
+  label = 'Check current availability'
+} = Astro.props;
+---
+<aside class:list={["shop-note", compact && "shop-note--compact"]} aria-label="Square store handoff">
+  <div>
+    <p class="eyebrow">Current catalog</p>
+    <h2>{title}</h2>
+    <p>Prices, options, inventory, fulfillment, and checkout are kept current on Square.</p>
+  </div>
+  <a class="button button--light" href={productUrl} target="_blank" rel="noopener noreferrer">
+    {label}<span aria-hidden="true"> ↗</span><span class="sr-only"> (opens in a new tab)</span>
+  </a>
+</aside>

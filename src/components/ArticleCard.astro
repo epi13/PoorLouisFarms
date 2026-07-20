@@ -1,0 +1,17 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { withBase } from '@/data/site';
+interface Props { article: CollectionEntry<'journal'>; index?: number; }
+const { article, index = 0 } = Astro.props;
+const wordCount = article.body?.trim().split(/\s+/).length ?? 0;
+const minutes = Math.max(2, Math.ceil(wordCount / 220));
+---
+<article class="article-card">
+  <span class="article-card__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+  <div>
+    <p class="ledger-label">{article.data.category} · {minutes} min read</p>
+    <h2><a href={withBase(`/journal/${article.id}/`)}>{article.data.title}</a></h2>
+    <p>{article.data.description}</p>
+    <a class="text-link" href={withBase(`/journal/${article.id}/`)}>Read the field note <span aria-hidden="true">→</span></a>
+  </div>
+</article>

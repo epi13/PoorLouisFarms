@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import ShopNote from '@/components/ShopNote.astro';
+
+const processes = (await getCollection('processes')).sort((a, b) => a.data.number - b.data.number);
+const stages = ['Source', 'Prepare', 'Transform', 'Finish'] as const;
+---
+<BaseLayout title="How It Is Made" description="Follow the distinct growing, gathering, drying, fermenting, infusing, blending, testing, bottling, and packaging paths used across Poor Louis Farms products.">
+  <PageHeader eyebrow="From field note to finished good" title="How it is made—by more than one path." intro="Products begin with different materials and take different turns. This guide shows the decisions without implying that tea, sauce, salve, and home goods share one production line." number="03" />
+  <section class="section--tight section--paper-light">
+    <div class="container">
+      <div class="note-box"><strong>How to read the diagram</strong>Move from source to finish, but follow only the cards that fit the product. A fireweed leaf may go to drying or fermentation. Calendula may go from drying to oil infusion. Packaging is the one common destination.</div>
+      <div class="process-legend" aria-hidden="true">{stages.map((stage) => <span>{stage}</span>)}</div>
+      <div class="process-flow">
+        {stages.map((stage) => (
+          <section class="process-stage" aria-labelledby={`stage-${stage.toLowerCase()}`}>
+            <h2 id={`stage-${stage.toLowerCase()}`} class="process-stage__title">{stage}</h2>
+            {processes.filter((process) => process.data.stage === stage).map((process) => (
+              <article class="process-card" id={process.id}>
+                <p class="ledger-label">Step {String(process.data.number).padStart(2, '0')}</p>
+                <h3>{process.data.title}</h3>
+                <p>{process.data.description}</p>
+                <p class="process-card__applies"><strong>Seen in:</strong> {process.data.appliesTo.join(' · ')}</p>
+                {process.data.caution && <p class="process-card__caution">{process.data.caution}</p>}
+              </article>
+            ))}
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container split split--top">
+      <div><p class="eyebrow">What the diagram leaves out</p><h2>Craft is also the decision to pause.</h2><p class="lede">Sorting out a poor leaf, declining an uncertain harvest, or keeping an experiment off the shelf can be as important as any visible making step.</p></div>
+      <div><h3>Plain-language guardrails</h3><ul><li>Small-batch does not mean informal food safety.</li><li>“Local” is used only where a source is confirmed.</li><li>No product is implied to pass through every process.</li><li>This overview contains no home canning, shelf-life, or fermentation formula.</li><li>The current product label and Square listing remain the source for batch-specific directions.</li></ul></div>
+    </div>
+  </section>
+  <ShopNote />
+</BaseLayout>

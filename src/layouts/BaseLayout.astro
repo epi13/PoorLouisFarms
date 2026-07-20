@@ -1,0 +1,142 @@
+---
+import '@/styles/global.css';
+import BrandMark from '@/components/BrandMark.astro';
+import { site, withBase } from '@/data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  article?: { published: Date; reviewed: Date };
+}
+
+const { title, description = site.description, image, article } = Astro.props;
+const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | Explore & Learn`;
+const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '') || '/';
+const canonical = new URL(`.${pathname}`, `${site.canonicalOrigin}/`).href;
+const socialImage = image ?? new URL('social-card.jpg', `${site.canonicalOrigin}/`).href;
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: site.canonicalOrigin,
+  email: site.email,
+  address: { '@type': 'PostalAddress', addressLocality: 'Wasilla', addressRegion: 'AK', addressCountry: 'US' },
+  sameAs: [site.facebook]
+};
+const articleSchema = article ? {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: article.published.toISOString(),
+  dateModified: article.reviewed.toISOString(),
+  publisher: { '@type': 'Organization', name: site.name, url: site.canonicalOrigin },
+  mainEntityOfPage: canonical,
+  image: socialImage
+} : null;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#f5efdf" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/site.webmanifest')} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:alt" content="Illustrated Poor Louis Farms garden scene in Alaska" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <title>{pageTitle}</title>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(organizationSchema)} />
+    {articleSchema && <script type="application/ld+json" is:inline set:html={JSON.stringify(articleSchema)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header" data-site-header>
+      <div class="site-header__inner container">
+        <a class="site-brand" href={withBase('/')}>
+          <BrandMark size={44} />
+          <span><strong>Poor Louis Farms</strong><small>Wasilla, Alaska</small></span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+          <span class="menu-toggle__lines" aria-hidden="true"></span>
+          <span class="menu-toggle__label">Menu</span>
+        </button>
+        <nav id="site-navigation" class="site-nav" aria-label="Primary navigation" data-nav>
+          <ul>
+            {site.navigation.map((item) => {
+              const active = pathname.startsWith(item.href) || (item.href === '/farm/' && pathname.startsWith('/seasons/'));
+              return <li><a href={withBase(item.href)} aria-current={active ? 'page' : undefined}>{item.label}</a></li>;
+            })}
+          </ul>
+        </nav>
+        <a class="header-shop" href={site.squareShopUrl} target="_blank" rel="noopener noreferrer">
+          Shop on Square <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
+    </header>
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <BrandMark size={64} />
+          <p class="footer-title">Poor Louis Farms</p>
+          <p>{site.tagline}</p>
+          <p class="field-note">Made in Wasilla. Shop current goods on Square.</p>
+        </div>
+        <nav aria-label="Footer navigation">
+          <p class="footer-heading">Explore</p>
+          <ul>{site.footerNavigation.map((item) => <li><a href={withBase(item.href)}>{item.label}</a></li>)}</ul>
+        </nav>
+        <div>
+          <p class="footer-heading">Connect</p>
+          <ul class="footer-links">
+            <li><a href={`mailto:${site.email}`}>Email the farm</a></li>
+            <li><a href={site.facebook} target="_blank" rel="noopener noreferrer">Facebook <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></li>
+            <li><a href={site.squareShopUrl} target="_blank" rel="noopener noreferrer">Square store <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></li>
+          </ul>
+          <p class="footer-small">The family farm is not advertised for unscheduled public visits.</p>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <p>© {new Date().getFullYear()} Poor Louis Farms</p>
+        <p>Botanical information is educational, not medical advice.</p>
+      </div>
+    </footer>
+    <script>
+      const menuButton = document.querySelector('.menu-toggle');
+      const navigation = document.querySelector('[data-nav]');
+      const closeMenu = () => {
+        menuButton?.setAttribute('aria-expanded', 'false');
+        navigation?.removeAttribute('data-open');
+      };
+      menuButton?.addEventListener('click', () => {
+        const open = menuButton.getAttribute('aria-expanded') === 'true';
+        menuButton.setAttribute('aria-expanded', String(!open));
+        navigation?.toggleAttribute('data-open', !open);
+      });
+      navigation?.addEventListener('click', (event) => {
+        if ((event.target as Element).closest('a')) closeMenu();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') { closeMenu(); (menuButton as HTMLElement)?.focus(); }
+      });
+      const query = window.matchMedia('(min-width: 70rem)');
+      query.addEventListener('change', closeMenu);
+    </script>
+  </body>
+</html>
