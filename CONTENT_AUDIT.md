@@ -1,7 +1,8 @@
 # Poor Louis Farms content audit
 
-Audit date: 2026-07-19  
-Primary source: [Poor Louis Farms Square storefront](https://poor-louis-farms.square.site/) and its publicly rendered catalog.  
+Audit date: 2026-07-19
+
+Primary source: [Poor Louis Farms Square storefront](https://poor-louis-farms.square.site/) and its publicly rendered catalog.
 Method: inspected the published HTML bootstrap data, rendered the storefront with Chromium, recorded public network responses from Square's catalog endpoint, opened product routes, and captured source screenshots. No authenticated or administrative endpoints were used.
 
 ## Current public catalog

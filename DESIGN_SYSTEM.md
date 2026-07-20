@@ -2,7 +2,7 @@
 
 ## Selected direction
 
-**Working title:** The Northern Field Ledger  
+**Working title:** The Northern Field Ledger
 **Design statement:** An illustrated Alaskan field journal meets a welcoming family farm pantry.
 
 The visual system combines generous contemporary spacing with the quiet evidence of a well-used notebook: warm paper, crisp charcoal rules, botanical marginalia, small handwritten-style annotations, and functional ledger labels. Official product photographs stay plainly photographic. Generated landscape and specimen art stays visibly watercolor-and-ink. This separation keeps the site honest.

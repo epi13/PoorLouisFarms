@@ -1,6 +1,7 @@
 # Quality assurance report
 
-Final review date: 2026-07-19  
+Final review date: 2026-07-19
+
 Branch: `codex/explore-learn-revamp`
 
 ## Outcome
